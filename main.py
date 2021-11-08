@@ -24,6 +24,9 @@ description = """
        - Consultar informações de cada disciplina
        - Alterar disciplinas e notas
        - Deletar disciplinas e notas
+    
+
+    Alunos: Gabriella Cukier e Manuel Castanares
 """
 
 
@@ -51,7 +54,7 @@ class Disciplina(BaseModel):
 
 disciplinas = [
     {"id": 0, "name": "Megadados", "prof_name": "Ayres", "anotacoes": [{"titulo": "Proj1", "nota": "indo"}]},
-    {"id": 1,"name": "cloud", "anotacoes": [{"titulo": "h1", "nota": "acebei:"}, {"titulo": "h3", "nota": "precisa acabar"}]},
+    {"id": 1,"name": "cloud", "anotacoes": [{"titulo": "h1", "nota": "acabei:"}, {"titulo": "h3", "nota": "precisa acabar"}]},
     {"id": 2,"name": "descomp", "prof_name": "Paulo", "anotacoes": [{"titulo": "P1", "nota": "já foi"}, {"titulo": "P2", "nota": "será"}]}
 ]
 
@@ -75,7 +78,10 @@ async def add(nome: str = Form(...), nome_prof: Optional[str] = Form(None)):
     Cria uma disciplina com todos os atributos
     - **nome**: A disciplina tem um nome único (obrigatório) 
     - **nome do professor**: A disciplina tem um nome de professor (opcional)
-    - **anotacoes**: A disciplina tem um campo de anotação livre (texto)
+    - **anotacoes**: A disciplina tem um campo de anotação livre (texto) - inicialmente vazio
+
+    Nova disciplina criada com nome, nome do professor e anotações
+    - **cached**: False
     """
 
 # Garantindo que o nome da disciplina é único
@@ -107,7 +113,7 @@ tags=["disciplina"]
 )
 async def show():
     """
-     Lê todas os nomes das disciplinas existentes
+     Lê todos os nomes das disciplinas existentes
     """
     print(disciplinas)
     return {"nomes_disciplinas": [d["name"] for d in disciplinas]}
@@ -128,8 +134,7 @@ async def update(nome_disciplina: str = Form(...), novo_nome_disciplina: Optiona
     Atualiza as informações de uma determinada disciplina
     - **nome_disciplina**: A disciplina que será alterada
     - **novo_nome_disciplina**: Novo nome que a disciplina receberá
-    - **nome_prof**: Nome do professor que se deseja alterar
-    - **anotacoes**: Novas anotacoes a serem alteradas
+    - **nome_prof**: Novo nome do professor que se deseja alterar
     """
   
 # Checa se disciplina existe
@@ -144,7 +149,6 @@ async def update(nome_disciplina: str = Form(...), novo_nome_disciplina: Optiona
     nome_prof_old = disciplinas[item_id]["prof_name"]
     anotacoes = disciplinas[item_id]["anotacoes"]
     id_disciplina = disciplinas[item_id]["id"]
-
 
 
     if nome_prof is None:
@@ -211,6 +215,10 @@ async def add_note(nome_disciplina: str = Path(..., title="nome da disciplina"),
     - **nome_disciplina**: nome da disciplina com a nova nota
     - **titulo**: titulo da nota 
     - **nota**: Nota a ser adicionada
+
+
+    Nova nota criada com título e anotações
+    - **cached**: False
     """
     if not any(d["name"]==nome_disciplina for d in disciplinas):
             raise HTTPException(status_code=404, detail="Disciplina não encontrada")
@@ -266,7 +274,7 @@ async def update(nome_disciplina: str = Path(..., title="nome da disciplina"), n
     """
     Atualiza uma nota de determinada matéria
     - **nome_disciplina**: A disciplina cuja nota vai ser alterada
-    - **nome_titulo**: A titulo da nota a ser alterada
+    - **nome_titulo**: O título da nota a ser alterada
     - **nova_nota**: A nova nota a ser salva
     """
   
@@ -281,7 +289,7 @@ async def update(nome_disciplina: str = Path(..., title="nome da disciplina"), n
     
 # Checa se nota daquela titulo existe
     if not any(d["titulo"]==nome_titulo for d in disciplinas[item_id]["anotacoes"]):
-            raise HTTPException(status_code=404, detail="titulo não encontrada")  
+            raise HTTPException(status_code=404, detail="titulo não encontrado")  
 
 # Encontra a titulo e modifica a nota
     for d in range(len(disciplinas[item_id]["anotacoes"])):
@@ -305,7 +313,7 @@ def delete_nota(nome_disciplina: str = Path(..., title="nome da disciplina"), no
     """
     Deleta uma nota de determinada matéria
     - **nome_disciplina**: A disciplina em que a nota a ser deletada está
-    - **nome_titulo**: A titulo cuja nota se deseja deletar
+    - **nome_titulo**: O título cuja nota se deseja deletar
     """
 # Checa se disciplina existe
     if not any(d["name"]==nome_disciplina for d in disciplinas):
@@ -318,7 +326,7 @@ def delete_nota(nome_disciplina: str = Path(..., title="nome da disciplina"), no
 
 # Checa se nota daquela titulo existe
     if not any(d["titulo"]==nome_titulo for d in disciplinas[item_id]["anotacoes"]):
-            raise HTTPException(status_code=404, detail="titulo não encontrada")  
+            raise HTTPException(status_code=404, detail="titulo não encontrado")  
 
 # Encontra a titulo e a deleta
     for d in range(len(disciplinas[item_id]["anotacoes"])):
